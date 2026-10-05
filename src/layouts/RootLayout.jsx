@@ -13,7 +13,7 @@ export default function RootLayout() {
           <NavLink to="/about">Our story</NavLink>
         </nav>
         <div className="header-actions">
-          <a className="saved-link" href="/#the-feed">Saved</a>
+          <NavLink className="saved-link" to="/login">Log in</NavLink>
           <a className="sell-button" href="mailto:hello@goodkind.market">
             <span aria-hidden="true">＋</span> Sell a good thing
           </a>
