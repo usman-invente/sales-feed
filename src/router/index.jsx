@@ -2,7 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "../layouts/RootLayout";
 import Home from "../pages/Home";
 import About from "../pages/About";
-import AuthPage from "../pages/AuthPage";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 
 export const router = createBrowserRouter([
@@ -21,11 +22,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <AuthPage mode="login" />,
+        element: <Login />,
       },
       {
         path: "register",
-        element: <AuthPage mode="register" />,
+        element: <Register />,
       },
     ],
   },
