@@ -159,6 +159,46 @@
   color: #a2a395;
 }
 
+.field .contact-file-input {
+  padding: 10px;
+  border-style: dashed;
+  color: #72796d;
+  cursor: pointer;
+}
+
+.contact-file-input::file-selector-button {
+  margin-right: 12px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: #eaf0e4;
+  color: #354a34;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.contact-optional {
+  margin-left: 5px;
+  color: #96988e;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.contact-file-hint {
+  overflow: hidden;
+  color: #96988e;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
 .field textarea {
   min-height: 150px;
   resize: vertical;

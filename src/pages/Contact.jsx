@@ -24,6 +24,7 @@ const initialFormData = {
   email: '',
   reason: 'General question',
   message: '',
+  attachment: null,
 }
 
 export default function Contact() {
@@ -38,11 +39,19 @@ export default function Contact() {
     }))
   }
 
+  function handleFileChange(event) {
+    setFormData((prev) => ({
+      ...prev,
+      attachment: event.target.files?.[0] ?? null,
+    }))
+  }
+
   function handleSubmit(event) {
     event.preventDefault()
     console.log('Contact form submitted:', formData)
     setNotice('Thanks for reaching out — we’ll be in touch soon.')
     setFormData(initialFormData)
+    event.currentTarget.reset()
   }
 
   return (
@@ -122,6 +131,19 @@ export default function Contact() {
               value={formData.message}
               onChange={handleChange}
             />
+          </label>
+
+          <label className="field">
+            <span>Attachment <span className="contact-optional">Optional</span></span>
+            <input
+              className="contact-file-input"
+              name="attachment"
+              type="file"
+              onChange={handleFileChange}
+            />
+            <span className="contact-file-hint">
+              {formData.attachment?.name || 'Choose a file to include with your message'}
+            </span>
           </label>
 
           <button className="contact-submit" type="submit">
