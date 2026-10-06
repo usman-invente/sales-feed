@@ -6,11 +6,28 @@ import PasswordInput from './PasswordInput'
 export default function Login() {
   const [notice, setNotice] = useState('')
 
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  // 2. Universal change handler for inputs
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+
+
   function handleSubmit(event) {
     event.preventDefault()
-    setNotice(
-      'Your form is ready, but sign-in isn’t connected yet. Please check back soon.',
-    )
+    
+    // Access form values inside formData
+    console.log('Submitted Data:', formData);
   }
 
   return (
@@ -30,6 +47,8 @@ export default function Login() {
               placeholder="you@example.com"
               required
               type="email"
+              onChange={handleChange}
+              value={formData.email}
             />
           </label>
           <PasswordInput
@@ -37,14 +56,10 @@ export default function Login() {
             label="Password"
             name="password"
             placeholder="Enter your password"
+            onChange={handleChange}
+            value={formData.password}
           />
-          <div className="auth-form-options">
-            <label className="auth-remember">
-              <input name="remember" type="checkbox" />
-              <span>Keep me signed in</span>
-            </label>
-            <span className="auth-help-text">Forgot your password?</span>
-          </div>
+         
           <button className="auth-submit" type="submit">
             Log in <span aria-hidden="true">↗</span>
           </button>

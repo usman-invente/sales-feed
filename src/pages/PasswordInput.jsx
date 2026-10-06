@@ -22,9 +22,9 @@ function EyeIcon({ visible }) {
 export default function PasswordInput({
   autoComplete,
   label,
-  minLength = 8,
   name,
   placeholder,
+  ...props
 }) {
   const [visible, setVisible] = useState(false)
 
@@ -34,11 +34,11 @@ export default function PasswordInput({
       <span className="auth-password-wrap">
         <input
           autoComplete={autoComplete}
-          minLength={minLength}
           name={name}
           placeholder={placeholder}
           required
           type={visible ? 'text' : 'password'}
+          {...props}
         />
         <button
           aria-label={visible ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}

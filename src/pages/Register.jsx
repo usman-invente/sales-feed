@@ -7,19 +7,45 @@ import './Register.css'
 export default function Register() {
   const [notice, setNotice] = useState('')
 
-  function handleSubmit(event) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    terms: false,
+  });
 
-    if (formData.get('password') !== formData.get('confirmPassword')) {
-      setNotice('Those passwords don’t match yet. Give it another try.')
-      return
+  // 2. Universal change handler for inputs
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Password validation check
+    if (formData.password !== formData.confirmPassword) {
+      setNotice('Passwords do not match.');
+      return;
     }
 
-    setNotice(
-      'Your form is ready, but account creation isn’t connected yet. Please check back soon.',
-    )
-  }
+    if (formData.password.length < 8) {
+      setNotice('Password must be at least 8 characters long.');
+      return;
+    }
+
+    setNotice('Creating your account...');
+
+    // Access form values inside formData
+    console.log('Submitted Data:', formData);
+
+    // Send formData to your backend API here
+  };
 
   return (
     <AuthLayout variant="register">
@@ -37,6 +63,8 @@ export default function Register() {
               name="name"
               placeholder="What should we call you?"
               required
+              onChange={handleChange}
+              value={formData.name}
             />
           </label>
           <label className="auth-field">
@@ -47,6 +75,8 @@ export default function Register() {
               placeholder="you@example.com"
               required
               type="email"
+              onChange={handleChange}
+              value={formData.email}
             />
           </label>
           <PasswordInput
@@ -54,15 +84,25 @@ export default function Register() {
             label="Password"
             name="password"
             placeholder="At least 8 characters"
+            onChange={handleChange}
+            value={formData.password}
           />
           <PasswordInput
             autoComplete="new-password"
             label="Confirm password"
             name="confirmPassword"
             placeholder="Type your password again"
+            onChange={handleChange}
+            value={formData.confirmPassword}
           />
           <label className="auth-terms">
-            <input name="terms" required type="checkbox" />
+            <input
+              name="terms"
+              required
+              type="checkbox"
+              onChange={handleChange}
+              checked={formData.terms}
+            />
             <span>I agree to be kind and keep good things going.</span>
           </label>
           <button className="auth-submit" type="submit">

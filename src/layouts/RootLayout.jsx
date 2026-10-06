@@ -11,6 +11,7 @@ export default function RootLayout() {
         <nav className="site-nav" aria-label="Main navigation">
           <NavLink to="/" end>Discover</NavLink>
           <NavLink to="/about">Our story</NavLink>
+          <NavLink to="/contact">Contact</NavLink>
         </nav>
         <div className="header-actions">
           <NavLink className="saved-link" to="/login">Log in</NavLink>
