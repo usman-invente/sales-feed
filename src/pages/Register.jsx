@@ -1,57 +1,84 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import AuthLayout from './AuthLayout'
-import PasswordInput from './PasswordInput'
-import './Register.css'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import AuthLayout from "./AuthLayout";
+import { registerUser } from "../services/authService";
+import PasswordInput from "./PasswordInput";
+import "./Register.css";
+
 
 export default function Register() {
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState("");
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const INITIAL_FORM_STATE = {
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     terms: false,
-  });
+  };
+
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
   // 2. Universal change handler for inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Password validation check
     if (formData.password !== formData.confirmPassword) {
-      setNotice('Passwords do not match.');
+      setNotice("Passwords do not match.");
       return;
     }
 
     if (formData.password.length < 8) {
-      setNotice('Password must be at least 8 characters long.');
+      setNotice("Password must be at least 8 characters long.");
       return;
     }
 
-    setNotice('Creating your account...');
+    setNotice("Creating your account...");
 
-    // Access form values inside formData
-    console.log('Submitted Data:', formData);
+    try {
+      // 2. Format payload (Exclude confirmPassword)
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        termsAccepted: formData.terms,
+      };
 
-    // Send formData to your backend API here
+      // 3. API Call
+      await registerUser(payload);
+
+      // 4. State Reset & Success Message
+      setFormData(INITIAL_FORM_STATE);
+
+      setNotice('Account created successfully! Please log in.');
+    } catch (error) {
+
+      setNotice(error.message || 'An error occurred during registration. Please try again.');
+
+    } finally {
+      
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <AuthLayout variant="register">
       <div className="auth-form-wrap">
         <span className="auth-kicker auth-panel-kicker">COME ON IN</span>
-        <h1>Make yourself<br /><em>at home.</em></h1>
+        <h1>
+          Make yourself
+          <br />
+          <em>at home.</em>
+        </h1>
         <p className="auth-intro">
           Create an account and find your next favorite thing.
         </p>
@@ -117,8 +144,10 @@ export default function Register() {
         <p className="auth-switch">
           Already part of the neighborhood? <Link to="/login">Log in</Link>
         </p>
-        <Link className="auth-back-link" to="/">← Back to the good finds</Link>
+        <Link className="auth-back-link" to="/">
+          ← Back to the good finds
+        </Link>
       </div>
     </AuthLayout>
-  )
+  );
 }
