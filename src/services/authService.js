@@ -6,3 +6,10 @@ export const registerUser = async (userData) => {
     body: JSON.stringify(userData),
   });
 };
+
+export const loginUser = async (credentials) => {
+  return apiClient('/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  });
+};

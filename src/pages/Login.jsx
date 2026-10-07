@@ -2,14 +2,18 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthLayout from './AuthLayout'
 import PasswordInput from './PasswordInput'
+import { loginUser } from '../services/authService'
+
 
 export default function Login() {
   const [notice, setNotice] = useState('')
 
-  const [formData, setFormData] = useState({
+  const INITIAL_FORM_STATE = {
     email: '',
     password: '',
-  });
+  }
+
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
   // 2. Universal change handler for inputs
 
@@ -23,11 +27,24 @@ export default function Login() {
 
 
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
     
-    // Access form values inside formData
-    console.log('Submitted Data:', formData);
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+    }
+
+    setNotice('Logging in...')
+
+    // 3. API Call
+    await loginUser(payload);
+
+    // 4. State Reset & Success Message
+    setFormData(INITIAL_FORM_STATE);
+    setNotice('Login successful! Redirecting...');
+
+    
   }
 
   return (

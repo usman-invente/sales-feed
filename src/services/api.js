@@ -10,6 +10,7 @@ export const apiClient = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
+      credentials: 'include',
       headers: {
         ...defaultHeaders,
         ...options.headers,
