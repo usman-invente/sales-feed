@@ -1,27 +1,33 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-if (!BASE_URL) {
-  console.warn('Warning: VITE_API_BASE_URL is not defined in environment variables.');
-}
-
 export const apiClient = async (endpoint, options = {}) => {
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-  };
+  const isFormData = options.body instanceof FormData;
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      ...defaultHeaders,
-      ...options.headers,
-    },
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Request failed.');
+  const defaultHeaders = {};
+  if (!isFormData) {
+    defaultHeaders['Content-Type'] = 'application/json';
   }
 
-  return data;
+  try {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        ...defaultHeaders,
+        ...options.headers,
+      },
+    });
+
+    // Handle responses with empty bodies (e.g., 204 No Content)
+    if (response.status === 204) return null;
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Request failed.');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('API Call Error:', error);
+    throw error;
+  }
 };

@@ -66,7 +66,7 @@ export default function Register() {
 
     } finally {
       
-      setIsSubmitting(false);
+      //setIsSubmitting(false);
     }
   };
 

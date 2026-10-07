@@ -1,57 +1,78 @@
-import { useState } from 'react'
-import './Contact.css'
+import { useState } from "react";
+import "./Contact.css";
+import { submitContactForm } from "../services/contactService";
 
 const contactDetails = [
   {
-    title: 'Email us',
-    text: 'hello@goodkind.market',
-    subtext: 'For support, selling questions, and partnership ideas.',
+    title: "Email us",
+    text: "hello@goodkind.market",
+    subtext: "For support, selling questions, and partnership ideas.",
   },
   {
-    title: 'Visit the studio',
-    text: '18 Orchard Row, Brooklyn, NY',
-    subtext: 'Come by for local pickups and community events.',
+    title: "Visit the studio",
+    text: "18 Orchard Row, Brooklyn, NY",
+    subtext: "Come by for local pickups and community events.",
   },
   {
-    title: 'Hours',
-    text: 'Mon–Fri · 9am–6pm',
-    subtext: 'We usually reply within one to two business days.',
+    title: "Hours",
+    text: "Mon–Fri · 9am–6pm",
+    subtext: "We usually reply within one to two business days.",
   },
-]
+];
 
 const initialFormData = {
-  name: '',
-  email: '',
-  reason: 'General question',
-  message: '',
+  name: "",
+  email: "",
+  reason: "General question",
+  message: "",
   attachment: null,
-}
+};
 
 export default function Contact() {
-  const [formData, setFormData] = useState(initialFormData)
-  const [notice, setNotice] = useState('')
+  const [formData, setFormData] = useState(initialFormData);
+  const [notice, setNotice] = useState("");
 
   const handleChange = (event) => {
-    const { name, value } = event.target
+    const { name, value } = event.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   function handleFileChange(event) {
     setFormData((prev) => ({
       ...prev,
       attachment: event.target.files?.[0] ?? null,
-    }))
+    }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault()
-    console.log('Contact form submitted:', formData)
-    setNotice('Thanks for reaching out — we’ll be in touch soon.')
-    setFormData(initialFormData)
-    event.currentTarget.reset()
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (formData.attachment && formData.attachment.type !== "application/pdf") {
+      alert("Please upload a valid PDF file.");
+      return;
+    }
+
+    const payload = new FormData();
+
+    payload.append("name", formData.name);
+    payload.append("email", formData.email);
+    payload.append("subject", formData.reason);
+    payload.append("message", formData.message);
+
+    if (formData.attachment) {
+      payload.append("attachment", formData.attachment); // Raw File instance
+    }
+
+    await submitContactForm(payload);
+
+    setFormData(initialFormData);
+
+    setNotice("Thanks for reaching out — we’ll be in touch soon.");
+
+    event.target.reset();
   }
 
   return (
@@ -63,14 +84,16 @@ export default function Contact() {
           </span>
           <h1>We’d love to hear from you.</h1>
           <p>
-            Whether you’re looking to sell a favorite piece, ask a question,
-            or just say hello, we’re happy to help.
+            Whether you’re looking to sell a favorite piece, ask a question, or
+            just say hello, we’re happy to help.
           </p>
         </div>
         <div className="contact-cta">
           <span className="contact-cta-label">Quick reply</span>
           <a href="mailto:hello@goodkind.market">hello@goodkind.market</a>
-          <span className="contact-cta-meta">Usually within 1–2 business days</span>
+          <span className="contact-cta-meta">
+            Usually within 1–2 business days
+          </span>
         </div>
       </section>
 
@@ -113,7 +136,11 @@ export default function Contact() {
 
           <label className="field">
             <span>Reason</span>
-            <select name="reason" value={formData.reason} onChange={handleChange}>
+            <select
+              name="reason"
+              value={formData.reason}
+              onChange={handleChange}
+            >
               <option>General question</option>
               <option>Sell an item</option>
               <option>Partnership</option>
@@ -134,7 +161,9 @@ export default function Contact() {
           </label>
 
           <label className="field">
-            <span>Attachment <span className="contact-optional">Optional</span></span>
+            <span>
+              Attachment <span className="contact-optional">Optional</span>
+            </span>
             <input
               className="contact-file-input"
               name="attachment"
@@ -142,7 +171,8 @@ export default function Contact() {
               onChange={handleFileChange}
             />
             <span className="contact-file-hint">
-              {formData.attachment?.name || 'Choose a file to include with your message'}
+              {formData.attachment?.name ||
+                "Choose a file to include with your message"}
             </span>
           </label>
 
@@ -158,5 +188,5 @@ export default function Contact() {
         </form>
       </section>
     </div>
-  )
+  );
 }
