@@ -7,7 +7,7 @@ export const registerUser = async (userData) => {
   });
 };
 
-export const loginUser = async (credentials) => {
+export const loginService = async (credentials) => {
   return apiClient('/login', {
     method: 'POST',
     body: JSON.stringify(credentials),

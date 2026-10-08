@@ -2,11 +2,15 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthLayout from './AuthLayout'
 import PasswordInput from './PasswordInput'
-import { loginUser } from '../services/authService'
-
-
+import { loginService } from '../services/authService'
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 export default function Login() {
   const [notice, setNotice] = useState('')
+  
+  const { loginUser: login } = useAuth();
+
+  const navigate = useNavigate();
 
   const INITIAL_FORM_STATE = {
     email: '',
@@ -28,24 +32,31 @@ export default function Login() {
 
 
   async function handleSubmit(event) {
-    event.preventDefault()
-    
-    const payload = {
-      email: formData.email,
-      password: formData.password,
-    }
+  event.preventDefault();
 
-    setNotice('Logging in...')
+  const payload = {
+    email: formData.email,
+    password: formData.password,
+  };
 
-    // 3. API Call
-    await loginUser(payload);
+  setNotice('Logging in...');
 
-    // 4. State Reset & Success Message
-    setFormData(INITIAL_FORM_STATE);
+  try {
+    // 1. Call your API service (capture response)
+    const data = await loginService(payload); // renamed from loginUser to avoid name collision
+
+    // 2. Pass user data & token to AuthContext method
+    login(data.user, data.accessToken);
+
     setNotice('Login successful! Redirecting...');
 
-    
+    // 3. Navigate to dashboard
+    navigate('/dashboard');
+  } catch (error) {
+    // 4. Handle API / network failures
+    setNotice(error.message || 'Login failed. Please check your credentials.');
   }
+}
 
   return (
     <AuthLayout>
