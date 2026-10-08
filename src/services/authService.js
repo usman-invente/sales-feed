@@ -13,3 +13,9 @@ export const loginService = async (credentials) => {
     body: JSON.stringify(credentials),
   });
 };
+
+export const refreshSession = async () => {
+  return await apiClient("/refresh", {
+    method: "POST",
+  });
+};

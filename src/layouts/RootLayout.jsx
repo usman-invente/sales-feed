@@ -1,6 +1,9 @@
 import { Outlet, NavLink } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 
 export default function RootLayout() {
+  const { user } = useAuth();
+
   return (
     <div className="site-shell">
       <header className="site-header">
@@ -12,9 +15,15 @@ export default function RootLayout() {
           <NavLink to="/" end>Discover</NavLink>
           <NavLink to="/about">Our story</NavLink>
           <NavLink to="/contact">Contact</NavLink>
+     
+          {user && <NavLink to="/dashboard">Dashboard</NavLink>}
         </nav>
         <div className="header-actions">
-          <NavLink className="saved-link" to="/login">Log in</NavLink>
+          {user ? (
+            <span>Welcome, {user.name}!</span>
+          ) : (
+            <NavLink className="saved-link" to="/login">Log in</NavLink>
+          )}
           <a className="sell-button" href="mailto:hello@goodkind.market">
             <span aria-hidden="true">＋</span> Sell a good thing
           </a>
