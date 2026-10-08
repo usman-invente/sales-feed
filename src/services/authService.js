@@ -19,3 +19,9 @@ export const refreshSession = async () => {
     method: "POST",
   });
 };
+
+export const logoutSession = async () => {
+  return apiClient("/logout", {
+    method: "POST",
+  });
+};

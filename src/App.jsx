@@ -17,10 +17,15 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          {/* Public Routes */}
           <Route element={<PublicOnlyRoute />}>
             <Route path="/login" element={<Login />} />
           </Route>
-          <Route path="register" element={<Register />} />
+
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/register" element={<Register />} />
+          </Route>
+
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />

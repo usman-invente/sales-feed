@@ -1,16 +1,29 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { logoutSession } from '../services/authService'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { user, logoutUser } = useAuth()
   const navigate = useNavigate()
+  const [notice, setNotice] = useState('')
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const displayName =
     user?.name || user?.username || user?.email?.split('@')[0] || 'neighbor'
 
-  function handleLogout() {
-    logoutUser()
-    navigate('/login', { replace: true })
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    setNotice('')
+
+    try {
+      await logoutSession()
+      logoutUser()
+      navigate('/login', { replace: true })
+    } catch (error) {
+      setNotice(error.message || 'Unable to log out. Please try again.')
+      setIsLoggingOut(false)
+    }
   }
 
   return (
@@ -29,10 +42,16 @@ export default function Dashboard() {
           <Link className="dashboard-primary-link" to="/">
             Explore the feed <span aria-hidden="true">↗</span>
           </Link>
-          <button className="dashboard-logout" type="button" onClick={handleLogout}>
-            Log out
+          <button
+            className="dashboard-logout"
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? 'Logging out…' : 'Log out'}
           </button>
         </div>
+        {notice && <p className="dashboard-notice" role="alert">{notice}</p>}
       </section>
 
       <section className="dashboard-content" aria-labelledby="dashboard-title">
