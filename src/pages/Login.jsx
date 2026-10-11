@@ -92,7 +92,7 @@ export default function Login() {
             {errors.email && (
               <span
                 className="field-error"
-                style={{ color: "red", fontSize: "0.85rem" }}
+               
               >
                 {Array.isArray(errors.email) ? errors.email[0] : errors.email}
               </span>
@@ -113,7 +113,6 @@ export default function Login() {
             {errors.password && (
               <span
                 className="field-error"
-                style={{ color: "red", fontSize: "0.85rem" }}
               >
                 {Array.isArray(errors.password) ? errors.password[0] : errors.password}
               </span>

@@ -8,6 +8,7 @@ import "./Register.css";
 
 export default function Register() {
   const [notice, setNotice] = useState("");
+  const [errors, setErrors] = useState({});
 
   const INITIAL_FORM_STATE = {
     name: "",
@@ -30,17 +31,9 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Password validation check
-    if (formData.password !== formData.confirmPassword) {
-      setNotice("Passwords do not match.");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setNotice("Password must be at least 8 characters long.");
-      return;
-    }
+    setErrors({});
+ 
+  
 
     setNotice("Creating your account...");
 
@@ -51,6 +44,7 @@ export default function Register() {
         email: formData.email,
         password: formData.password,
         termsAccepted: formData.terms,
+        confirmPassword: formData.confirmPassword, 
       };
 
       // 3. API Call
@@ -61,8 +55,15 @@ export default function Register() {
 
       setNotice('Account created successfully! Please log in.');
     } catch (error) {
+      setErrors({});
+      setNotice('');
 
-      setNotice(error.message || 'An error occurred during registration. Please try again.');
+      if (error.errors) {
+        setErrors(error.errors);
+      } else {
+        setNotice(error.message || 'An error occurred during registration. Please try again.');
+      }
+     
 
     } finally {
       
@@ -89,10 +90,17 @@ export default function Register() {
               autoComplete="name"
               name="name"
               placeholder="What should we call you?"
-              required
+              
               onChange={handleChange}
               value={formData.name}
             />
+
+            {errors.name && (
+              <span className="field-error">
+                {Array.isArray(errors.name) ? errors.name[0] : errors.name}
+              </span>
+            )}
+
           </label>
           <label className="auth-field">
             <span>Email address</span>
@@ -100,11 +108,17 @@ export default function Register() {
               autoComplete="email"
               name="email"
               placeholder="you@example.com"
-              required
-              type="email"
+              type="text"
               onChange={handleChange}
               value={formData.email}
             />
+
+            {errors.email && (
+              <span className="field-error">
+                {Array.isArray(errors.email) ? errors.email[0] : errors.email}
+              </span>
+            )}
+
           </label>
           <PasswordInput
             autoComplete="new-password"
@@ -114,6 +128,12 @@ export default function Register() {
             onChange={handleChange}
             value={formData.password}
           />
+
+            {errors.password && (
+              <span className="field-error">
+                {Array.isArray(errors.password) ? errors.password[0] : errors.password}
+              </span>
+            )}
           <PasswordInput
             autoComplete="new-password"
             label="Confirm password"
@@ -122,15 +142,26 @@ export default function Register() {
             onChange={handleChange}
             value={formData.confirmPassword}
           />
+
+          {errors.confirmPassword && (
+            <span className="field-error">
+              {Array.isArray(errors.confirmPassword) ? errors.confirmPassword[0] : errors.confirmPassword}
+            </span>
+          )}
+
           <label className="auth-terms">
             <input
               name="terms"
-              required
               type="checkbox"
               onChange={handleChange}
               checked={formData.terms}
             />
             <span>I agree to be kind and keep good things going.</span>
+            {errors.terms && (
+              <span className="field-error">
+                {Array.isArray(errors.terms) ? errors.terms[0] : errors.terms}
+              </span>
+            )}
           </label>
           <button className="auth-submit" type="submit">
             Create your account <span aria-hidden="true">↗</span>

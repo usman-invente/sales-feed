@@ -36,7 +36,6 @@ export default function PasswordInput({
           autoComplete={autoComplete}
           name={name}
           placeholder={placeholder}
-          required
           type={visible ? 'text' : 'password'}
           {...props}
         />
