@@ -22,8 +22,12 @@ export const apiClient = async (endpoint, options = {}) => {
 
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Request failed.');
+   if (!response.ok) {
+      // Yahan ek custom error banayen jo data ko bhi carry kare
+      const err = new Error(data.message || 'Request failed.');
+      err.errors = data.errors; // Backend ke field-specific errors yahan attach kar diye
+      err.status = response.status;
+      throw err;
     }
 
     return data;

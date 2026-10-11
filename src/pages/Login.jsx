@@ -1,21 +1,21 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import AuthLayout from './AuthLayout'
-import PasswordInput from './PasswordInput'
-import { loginService } from '../services/authService'
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import AuthLayout from "./AuthLayout";
+import PasswordInput from "./PasswordInput";
+import { loginService } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
-  const [notice, setNotice] = useState('')
-  
+  const [notice, setNotice] = useState("");
+  const [errors, setErrors] = useState({});
   const { loginUser: login } = useAuth();
 
   const navigate = useNavigate();
 
   const INITIAL_FORM_STATE = {
-    email: '',
-    password: '',
-  }
+    email: "",
+    password: "",
+  };
 
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
@@ -27,42 +27,52 @@ export default function Login() {
       ...prev,
       [name]: value,
     }));
-  }
-
-
-
-  async function handleSubmit(event) {
-  event.preventDefault();
-
-  const payload = {
-    email: formData.email,
-    password: formData.password,
   };
 
-  setNotice('Logging in...');
+  async function handleSubmit(event) {
+    event.preventDefault();
 
-  try {
-    // 1. Call your API service (capture response)
-    const data = await loginService(payload); // renamed from loginUser to avoid name collision
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+    };
 
-    // 2. Pass user data & token to AuthContext method
-    login(data.user, data.accessToken);
+    setNotice("Logging in...");
+    setErrors({});
+    try {
+      // 1. Call your API service (capture response)
+      const data = await loginService(payload); // renamed from loginUser to avoid name collision
 
-    setNotice('Login successful! Redirecting...');
+      // 2. Pass user data & token to AuthContext method
+      login(data.user, data.accessToken);
 
-    // 3. Navigate to dashboard
-    navigate('/dashboard');
-  } catch (error) {
-    // 4. Handle API / network failures
-    setNotice(error.message || 'Login failed. Please check your credentials.');
+      setNotice("Login successful! Redirecting...");
+
+      // 3. Navigate to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.log("Login failed:", error);
+      setNotice('');
+      // 4. Handle API / network failures
+      if (error.errors) {
+        setErrors(error.errors);
+      } else {
+        setNotice(
+          error.message || "Login failed. Please check your credentials.",
+        );
+      }
+    }
   }
-}
 
   return (
     <AuthLayout>
       <div className="auth-form-wrap">
         <span className="auth-kicker auth-panel-kicker">WELCOME BACK</span>
-        <h1>Good to<br /><em>see you.</em></h1>
+        <h1>
+          Good to
+          <br />
+          <em>see you.</em>
+        </h1>
         <p className="auth-intro">
           Your next good find is right where you left it.
         </p>
@@ -73,12 +83,22 @@ export default function Login() {
               autoComplete="email"
               name="email"
               placeholder="you@example.com"
-              required
               type="email"
               onChange={handleChange}
               value={formData.email}
             />
+
+            {/* Email Error Display */}
+            {errors.email && (
+              <span
+                className="field-error"
+                style={{ color: "red", fontSize: "0.85rem" }}
+              >
+                {Array.isArray(errors.email) ? errors.email[0] : errors.email}
+              </span>
+            )}
           </label>
+
           <PasswordInput
             autoComplete="current-password"
             label="Password"
@@ -87,7 +107,18 @@ export default function Login() {
             onChange={handleChange}
             value={formData.password}
           />
-         
+
+
+            {/* Password Error Display */}
+            {errors.password && (
+              <span
+                className="field-error"
+                style={{ color: "red", fontSize: "0.85rem" }}
+              >
+                {Array.isArray(errors.password) ? errors.password[0] : errors.password}
+              </span>
+            )}
+
           <button className="auth-submit" type="submit">
             Log in <span aria-hidden="true">↗</span>
           </button>
@@ -100,8 +131,10 @@ export default function Login() {
         <p className="auth-switch">
           New around here? <Link to="/register">Create an account</Link>
         </p>
-        <Link className="auth-back-link" to="/">← Back to the good finds</Link>
+        <Link className="auth-back-link" to="/">
+          ← Back to the good finds
+        </Link>
       </div>
     </AuthLayout>
-  )
+  );
 }

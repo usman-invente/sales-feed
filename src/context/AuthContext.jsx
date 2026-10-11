@@ -8,20 +8,31 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    const controller = new AbortController();
+
     const verifyUserSession = async () => {
       try {
-        console.log('fdf');
-        // Backend verifies HTTP-only cookie and returns user profile
-        const data = await refreshSession();
+        // refreshSession me signal pass karein
+        const data = await refreshSession({ signal: controller.signal });
         setUser(data.user);
       } catch (err) {
-        setUser(null);
+        // Abort hone wali request par state change mat hone dein
+        if (err.name !== "AbortError" && err.name !== "CanceledError") {
+          setUser(null);
+        }
       } finally {
-         setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     verifyUserSession();
+
+    // Cleanup function: component unmount hone par request cancel karega
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const loginUser = (userData, accessToken) => {
@@ -35,7 +46,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loginUser, logoutUser, loading }}>
+    <AuthContext.Provider
+      value={{ user, token, loginUser, logoutUser, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
