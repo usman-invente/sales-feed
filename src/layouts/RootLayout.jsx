@@ -33,9 +33,9 @@ export default function RootLayout() {
             </NavLink>
           )}
 
-          <a className="sell-button" href="mailto:hello@goodkind.market">
+          <NavLink className="sell-button" to="/add-product">
             <span aria-hidden="true">＋</span> Sell a good thing
-          </a>
+          </NavLink>
         </div>
       </header>
       <main className="site-main">

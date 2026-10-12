@@ -71,6 +71,12 @@ export default function Dashboard() {
             <Link to="/">Explore good finds <span aria-hidden="true">↗</span></Link>
           </article>
           <article className="dashboard-card">
+            <span className="dashboard-card-symbol" aria-hidden="true">＋</span>
+            <h3>Share something lovely</h3>
+            <p>Give a good thing a second life with a new neighbor.</p>
+            <Link to="/add-product">Add a product <span aria-hidden="true">↗</span></Link>
+          </article>
+          <article className="dashboard-card">
             <span className="dashboard-card-symbol" aria-hidden="true">♡</span>
             <h3>Need a hand?</h3>
             <p>Get in touch with us and we’ll be happy to help.</p>

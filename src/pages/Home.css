@@ -548,6 +548,12 @@ button {
   font-size: 10px;
 }
 
+.feed-error {
+  margin-top: 16px;
+  color: #a13d2d;
+  font-size: 13px;
+}
+
 .listing-grid {
   display: grid;
   padding-top: 22px;
