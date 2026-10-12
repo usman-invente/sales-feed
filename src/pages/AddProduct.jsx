@@ -94,24 +94,24 @@ export default function AddProduct() {
       formData.append("imageAlt", product.imageAlt);
       formData.append("tone", product.tone);
 
-      // Agar user ne image select ki hai toh usko append karein
+      
       if (imageFile) {
-        formData.append("image", imageFile); // Yeh name="image" wahi hai jo Multer (.single("image")) maang raha hai
+        formData.append("image", imageFile); // Multer (.single("image"))
       }
 
-      // 2. Service ko FormData pass karein
+    
       await addUserListing(formData);
       
       navigate("/");
     } catch (saveError) {
-      // 3. Backend se aane wale error ko gracefully set karein
+     
       setError(
         saveError.response?.data?.message || 
         saveError.message || 
         "Unable to save your product. Please try again."
       );
     } finally {
-      // Chahe request pass ho ya fail, loading state ko khatam karna zaroori hai
+    
       setIsSubmitting(false);
     }
   }
