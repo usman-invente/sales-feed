@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { getUserListings } from '../services/listingService'
 import './Home.css'
 
 const categories = ['Everything', 'Furniture', 'Tech', 'Home', 'Fashion', 'Art']
@@ -172,17 +171,10 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('Everything')
   const [search, setSearch] = useState('')
   const [savedItems, setSavedItems] = useState([])
-  const [{ listings: userListings, error: listingsError }] = useState(() => {
-    try {
-      return { listings: getUserListings(), error: '' }
-    } catch (error) {
-      return { listings: [], error: error.message || 'Unable to load saved listings.' }
-    }
-  })
 
   const visibleListings = useMemo(() => {
     const query = search.trim().toLowerCase()
-    return [...userListings, ...listings].filter((listing) => {
+    return listings.filter((listing) => {
       const matchesCategory =
         activeCategory === 'Everything' || listing.category === activeCategory
       const matchesSearch =
@@ -192,7 +184,7 @@ export default function Home() {
           .includes(query)
       return matchesCategory && matchesSearch
     })
-  }, [activeCategory, search, userListings])
+  }, [activeCategory, search])
 
   function toggleSavedItem(id) {
     setSavedItems((current) =>
@@ -262,8 +254,6 @@ export default function Home() {
           </div>
           <span className="listing-count">{visibleListings.length} lovely finds</span>
         </div>
-
-        {listingsError && <p className="feed-error" role="alert">{listingsError}</p>}
 
         {visibleListings.length ? (
           <div className="listing-grid">

@@ -93,6 +93,35 @@
   color: #a1a498;
 }
 
+.add-product-field input[type="file"] {
+  min-height: 68px;
+  padding: 11px;
+  border: 1px dashed #b9beae;
+  background: #fafaf7;
+  cursor: pointer;
+}
+
+.add-product-field input[type="file"]::file-selector-button {
+  min-height: 38px;
+  margin-right: 12px;
+  padding: 0 13px;
+  border: 1px solid #dedfd6;
+  border-radius: 4px;
+  background: #fff;
+  color: #304632;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.add-product-image-preview {
+  display: block;
+  width: min(100%, 320px);
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
 .add-product-error {
   margin-top: 18px;
   color: #a13d2d;
