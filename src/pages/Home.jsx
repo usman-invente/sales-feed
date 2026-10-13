@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getListings } from '../services/listingService'
+import { getListings, normalizeListing } from '../services/listingService'
 import './Home.css'
-
+import { socket } from '../socket';
 const categories = ['Everything', 'Furniture', 'Tech', 'Home', 'Fashion', 'Art']
 
 function SearchIcon() {
@@ -93,6 +93,23 @@ export default function Home() {
     loadListings()
     return () => controller.abort()
   }, [reloadKey])
+
+  useEffect(() => {
+    function handleNewProduct(newProduct) {
+      try {
+        const listing = normalizeListing(newProduct)
+        setListings((current) => [
+          listing,
+          ...current.filter((item) => item.id !== listing.id),
+        ])
+      } catch (error) {
+        console.error('Unable to display the new product:', error)
+      }
+    }
+
+    socket.on('new-product-created', handleNewProduct)
+    return () => socket.off('new-product-created', handleNewProduct)
+  }, []);
 
   const visibleListings = useMemo(() => {
     const query = search.trim().toLowerCase()
