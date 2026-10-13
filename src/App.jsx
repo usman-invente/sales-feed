@@ -10,7 +10,13 @@ import AddProduct from "./pages/AddProduct";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicOnlyRoute } from "./components/PublicOnlyRoute";
+import { socket } from './socket';
 import "./App.css";
+
+
+
+
+
 export default function App() {
   return (
     <BrowserRouter>

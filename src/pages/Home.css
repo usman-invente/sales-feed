@@ -693,6 +693,20 @@ button {
   text-align: center;
 }
 
+.feed-state {
+  display: grid;
+  min-height: 220px;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  color: #818175;
+  text-align: center;
+}
+
+.feed-state p {
+  margin: 0;
+}
+
 .empty-feed > span {
   color: #df805e;
   font-size: 28px;

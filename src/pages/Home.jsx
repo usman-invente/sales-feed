@@ -1,114 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { getListings } from '../services/listingService'
 import './Home.css'
 
 const categories = ['Everything', 'Furniture', 'Tech', 'Home', 'Fashion', 'Art']
-
-const listings = [
-  {
-    id: 1,
-    title: 'The Sunday Lounge Chair',
-    price: 420,
-    location: 'Brooklyn, NY',
-    category: 'Furniture',
-    condition: 'Like new',
-    seller: 'Maya R.',
-    image:
-      'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Sculptural cream lounge chair in a sunlit room',
-    tone: 'sand',
-  },
-  {
-    id: 2,
-    title: 'Film Camera, Fully Working',
-    price: 185,
-    location: 'Queens, NY',
-    category: 'Tech',
-    condition: 'Good',
-    seller: 'Jonah K.',
-    image:
-      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Vintage camera ready to capture a moment',
-    tone: 'lavender',
-  },
-  {
-    id: 3,
-    title: 'A Little Olive Tree',
-    price: 68,
-    location: 'Park Slope, NY',
-    category: 'Home',
-    condition: 'New growth',
-    seller: 'Plant People',
-    image:
-      'https://images.unsplash.com/photo-1604881988758-f76ad2f7aac1?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Potted olive tree against a warm neutral wall',
-    tone: 'sage',
-  },
-  {
-    id: 4,
-    title: 'Everyday Leather Tote',
-    price: 95,
-    location: 'Greenpoint, NY',
-    category: 'Fashion',
-    condition: 'Very good',
-    seller: 'Amelia S.',
-    image:
-      'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Everyday leather tote bag in a soft neutral color',
-    tone: 'peach',
-  },
-  {
-    id: 5,
-    title: 'Oak Side Table, Handmade',
-    price: 240,
-    location: 'Cobble Hill, NY',
-    category: 'Furniture',
-    condition: 'Like new',
-    seller: 'Studio North',
-    image:
-      'https://images.unsplash.com/photo-1499933374294-4584851497cc?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Minimal wooden side table in a thoughtfully styled room',
-    tone: 'blue',
-  },
-  {
-    id: 6,
-    title: 'Prints for a Brighter Day',
-    price: 54,
-    location: 'Bed-Stuy, NY',
-    category: 'Art',
-    condition: 'Brand new',
-    seller: 'Sunday Studio',
-    image:
-      'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Colorful framed artwork in a bright gallery',
-    tone: 'pink',
-  },
-  {
-    id: 7,
-    title: 'The Perfect Reading Lamp',
-    price: 110,
-    location: 'Fort Greene, NY',
-    category: 'Home',
-    condition: 'Good',
-    seller: 'Elliot W.',
-    image:
-      'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Warm modern lamp illuminating a cozy room',
-    tone: 'yellow',
-  },
-  {
-    id: 8,
-    title: 'Headphones for the Long Way',
-    price: 130,
-    location: 'Williamsburg, NY',
-    category: 'Tech',
-    condition: 'Like new',
-    seller: 'Sam T.',
-    image:
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1000&q=85',
-    imageAlt: 'Comfortable over-ear headphones in a rich terracotta color',
-    tone: 'rose',
-  },
-]
 
 function SearchIcon() {
   return (
@@ -171,6 +65,34 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('Everything')
   const [search, setSearch] = useState('')
   const [savedItems, setSavedItems] = useState([])
+  const [listings, setListings] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadListings() {
+      setIsLoading(true)
+      setLoadError('')
+
+      try {
+        setListings(await getListings({ signal: controller.signal }))
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setLoadError(error.message || 'Unable to load products. Please try again.')
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadListings()
+    return () => controller.abort()
+  }, [reloadKey])
 
   const visibleListings = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -184,7 +106,7 @@ export default function Home() {
           .includes(query)
       return matchesCategory && matchesSearch
     })
-  }, [activeCategory, search])
+  }, [activeCategory, listings, search])
 
   function toggleSavedItem(id) {
     setSavedItems((current) =>
@@ -255,7 +177,20 @@ export default function Home() {
           <span className="listing-count">{visibleListings.length} lovely finds</span>
         </div>
 
-        {visibleListings.length ? (
+        {isLoading ? (
+          <div className="feed-state" role="status">Loading products…</div>
+        ) : loadError ? (
+          <div className="feed-state" role="alert">
+            <p>{loadError}</p>
+            <button
+              className="reset-filters"
+              type="button"
+              onClick={() => setReloadKey((current) => current + 1)}
+            >
+              Try again
+            </button>
+          </div>
+        ) : visibleListings.length ? (
           <div className="listing-grid">
             {visibleListings.map((listing) => (
               <ListingCard
@@ -283,7 +218,9 @@ export default function Home() {
             </button>
           </div>
         )}
-        <div className="feed-endnote"><span>✳</span> You’re all caught up. Go enjoy your new find.</div>
+        {!isLoading && !loadError && visibleListings.length > 0 && (
+          <div className="feed-endnote"><span>✳</span> You’re all caught up. Go enjoy your new find.</div>
+        )}
       </section>
     </div>
   )

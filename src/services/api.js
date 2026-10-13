@@ -1,4 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const apiClient = async (endpoint, options = {}) => {
   const isFormData = options.body instanceof FormData;
 
@@ -32,6 +33,9 @@ export const apiClient = async (endpoint, options = {}) => {
 
     return data;
   } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error; // Component ka catch block isay handle kar lega
+    }
     console.error('API Call Error:', error);
     throw error;
   }
